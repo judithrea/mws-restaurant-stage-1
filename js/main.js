@@ -9,6 +9,7 @@ var markers = []
  */
 document.addEventListener('DOMContentLoaded', (event) => {
   initMap(); // added 
+  updateRestaurants();
   fetchNeighborhoods();
   fetchCuisines();
 });
@@ -72,6 +73,7 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
  * Initialize leaflet map, called from HTML.
  */
 initMap = () => {
+  if (typeof L === 'undefined') return; 
   self.newMap = L.map('map', {
         center: [40.722216, -73.987501],
         zoom: 12,
@@ -86,7 +88,7 @@ initMap = () => {
     id: 'mapbox.streets'
   }).addTo(newMap);
 
-  updateRestaurants();
+  //updateRestaurants();
 }
 /* window.initMap = () => {
   let loc = {
@@ -191,6 +193,7 @@ addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     // Add marker to the map
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.newMap);
+    if (typeof marker === 'undefined') return;
     marker.on("click", onClick);
     function onClick() {
       window.location.href = marker.options.url;
@@ -209,4 +212,17 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 } */
+
+/**
+  * Service Worker registration
+  */
+
+if (navigator.serviceWorker) {
+  navigator.serviceWorker.register('/sw.js').then(function(reg) {
+  console.log(`Service Worker is registered`);
+}).catch(function(err) {
+  console.log(`Service Worker registration failed:`, err);
+});
+}
+
 
